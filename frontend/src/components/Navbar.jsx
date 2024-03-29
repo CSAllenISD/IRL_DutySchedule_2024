@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import '../navbar.css'; 
 
 function NavbarComponent() {
     const [showAdmin, setShowAdmin] = useState(false);
@@ -21,11 +22,12 @@ function NavbarComponent() {
     }, []);
     
   return (
-    <Navbar bg="primary" data-bs-theme="dark">
+    <Navbar className="custom-font custom-bg" bg="default" variant="dark">
         <Container>
+          
             <Navbar.Brand href="./dashboard">AHS DutyDashboard</Navbar.Brand>
             <Nav className="me-auto">
-                <Nav.Link href="./dashboard">Dashboard</Nav.Link>
+                <Nav.Link  href="./dashboard">Dashboard</Nav.Link>
                 <Nav.Link href="./calendar">Calendar</Nav.Link>
             </Nav>
 
