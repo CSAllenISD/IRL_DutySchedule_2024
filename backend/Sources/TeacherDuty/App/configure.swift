@@ -21,9 +21,11 @@ import MultipartKit
 func configure(_ app: Application) throws {
     
     app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
+
+    app.sessions.use(.fluent)
+    app.sessions.configuration.cookieName = "dutyscheduler_session"
     app.middleware.use(app.sessions.middleware)
 
-    
     app.logger.logLevel = .debug
     
     // Configuration
@@ -54,6 +56,7 @@ func configure(_ app: Application) throws {
 
     // Reigster Migrations
     //app.migrations.add(User.Migration())
+    app.migrations.add(SessionRecord.migration)
 
     // register routes
     try routes(app)

@@ -108,6 +108,11 @@ function ShiftAssignerMenu(props) {
                 className="row"
                 style={{ overflow: "hidden", maxHeight: "89.5vh" }}
             >
+               <Container className="col">
+                    <Button variant="primary" className="w-50">
+                        Email All
+                    </Button>
+                </Container>
                 <Container className="col">
                     <h2>Teachers On Duty</h2>
                     <hr />
@@ -125,11 +130,7 @@ function ShiftAssignerMenu(props) {
                         );
                     })}
                 </Container>
-                <Container className="col">
-                    <Button variant="primary" className="w-50">
-                        Email All
-                    </Button>
-                </Container>
+               
             </Container>
             <Container
                 className="row"
