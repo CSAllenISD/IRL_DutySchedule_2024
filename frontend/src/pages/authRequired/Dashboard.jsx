@@ -28,6 +28,10 @@ function DashboardPage(props) {
     const [eventLocation, setEventLocation] = React.useState("");
     const [eventLocationDesc, setEventLocationDesc] = React.useState("");
     const [nextDutyName, setNextDutyName] = React.useState("");
+    const [nextDutyStartTime, setNextDutyStartTime] = React.useState("");
+    const [nextDutyEndTime, setNextDutyEndTime] = React.useState("");
+    const [nextDutyDay, setNextDutyDay] = React.useState("");
+    const [nextDutyLocationName, setNextDutyLocationName] = React.useState("");
     const showEventModal = () => setEventModalVisibility(true);
     const hideEventModal = () => setEventModalVisibility(false);
     
@@ -93,9 +97,21 @@ function DashboardPage(props) {
 })
     .then((response) => response.json())
     .then((json) => {
+            if (Array.isArray(json) && json.length === 1) {
+                json = json[0];
+                }
             const retrieveNextDutyName = json.dutyName;
             setNextDutyName(retrieveNextDutyName);
-            console.log("Retrieved next duty name:", retrieveNextDutyName);
+            const retrieveNextDutyStartTime = json.startTime;
+            setNextDutyStartTime(retrieveNextDutyStartTime);
+            const retrieveNextDutyEndTime = json.endTime;
+            setNextDutyEndTime(retrieveNextDutyEndTime);
+            const retrieveNextDutyDay = json.day;
+            let formattedNextDutyDay = new Date(retrieveNextDutyDay);
+            formattedNextDutyDay = formattedNextDutyDay.toISOString().split("T")[0]
+            setNextDutyDay(formattedNextDutyDay);
+            const retrieveNextDutyLocationName = json.locationName;
+            setNextDutyLocationName(retrieveNextDutyLocationName);
 
 
              });
@@ -144,19 +160,19 @@ function DashboardPage(props) {
                             <br></br>
                             <p>
                                 <FontAwesomeIcon icon={faCalendar} />{" "}
-                                {props.nextDutyDate || " 01/02/2025"}
+                                 {nextDutyDay}
                             </p>
                             <p>
                                 <FontAwesomeIcon icon={faHourglassStart} />{" "}
-                                {props.nextDutyStartTime || " 4:00 PM"}
+                                {nextDutyStartTime}
                             </p>
                              <p>
                                 <FontAwesomeIcon icon={faHourglassEnd} />{" "}
-                                {props.nextDutyEndTime || " 5:00 PM"}
+                                {nextDutyEndTime}
                             </p>
                             <p>
                                 <FontAwesomeIcon icon={faMapPin} />{" "}
-                                {props.nextDutyLocation || " PAC"}
+                                 {nextDutyLocationName}
                             </p>
 			    
                         
@@ -164,12 +180,12 @@ function DashboardPage(props) {
 				
 				</Container>
 <AddToCalendarButton
-  name= {props.nextDutyName || "Bus Duty"}
+  name= {nextDutyName}
   options={['Outlook.com','Google','Apple', 'iCal']}
-  location={props.nextDutyLocation || "PAC"}
-  startDate={props.nextDutyDate || "2025-01-02"}
-  startTime={props.nextDutyStartTime || "16:00"}
-  endTime={props.nextDutyEndTime || "17:00"}
+  location={nextDutyLocationName}
+  startDate={nextDutyDay}
+  startTime={nextDutyStartTime}
+  endTime={nextDutyEndTime}
   timeZone="America/Chicago"
 ></AddToCalendarButton>
 			</Container>
