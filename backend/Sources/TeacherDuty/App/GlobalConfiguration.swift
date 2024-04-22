@@ -17,7 +17,8 @@ struct GlobalConfiguration {
 
     private enum GlobalConfigurationError: Error {
         case missingEnvironmentVariable(key: String)
-        case invalidEnvironmentVariableType(key: String, expectedType: Any.Type, actualValue: String) 
+        case emptyEnvironmentVariable(key: String)
+        case invalidEnvironmentVariableType(key: String, expectedType: LosslessStringConvertible.Type, actualValue: String)
     }
     
     static let cached: GlobalConfiguration = {
@@ -72,10 +73,15 @@ struct GlobalConfiguration {
         notificationTemplateID_forgotPassword = try Self.readEnvironmentVariable(key: "NOTIFICATION_TEMPLATE_ID_FORGOT_PASSWORD", asType: String.self)
     }
 
-    static private func readEnvironmentVariable<T: LosslessStringConvertible>(key: String, asType type: T.Type) throws -> T {
+    static private func readEnvironmentVariable<T: LosslessStringConvertible>(key: String, asType type: T.Type, allowsEmpty: Bool = false) throws -> T {
         guard let value = Environment.get(key) else {
             throw GlobalConfigurationError.missingEnvironmentVariable(key: key)
         }
+
+        guard !value.isEmpty || (value.isEmpty && allowsEmpty) else { //TODO: maybe use a extension for implies.
+            throw GlobalConfigurationError.emptyEnvironmentVariable(key: key)
+        }
+
         guard let typedValue = type.init(value) else {
             throw GlobalConfigurationError.invalidEnvironmentVariableType(key: key, expectedType: type, actualValue: value)
         }

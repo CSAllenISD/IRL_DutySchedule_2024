@@ -21,3 +21,20 @@ code {
 .fc-daygrid-day-number {
   text-decoration: none !important;
 }
+
+.picker .rdrDefinedRangesWrapper {
+  display: none !important;
+}
+
+.picker.not-selected .rdrMonthAndYearWrapper,
+.picker.not-selected .rdrMonths {
+  display: none !important;
+}
+
+.picker.not-selected .rdrDateDisplayItemActive {
+  border-color: rgba(0, 0, 0, 0) !important;
+}
+
+.picker.not-selected .rdrDateDisplayWrapper {
+  width: 664px;
+}
