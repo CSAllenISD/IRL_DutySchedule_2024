@@ -14,6 +14,7 @@ function AdminNavbarComponent(props) {
                 <Nav.Link href={process.env.PUBLIC_URL + "/adminPanel"}>Home</Nav.Link>
                 <Nav.Link href={process.env.PUBLIC_URL + "/adminPanel/upload"}>Upload</Nav.Link>
                 <Nav.Link href={process.env.PUBLIC_URL + "/adminPanel/calendar"}>Calendar</Nav.Link>
+                <Nav.Link href={process.env.PUBLIC_URL + "/adminPanel/dutySettings"}>Duty Settings</Nav.Link>
             </Nav>
         </Container>
     </Navbar>

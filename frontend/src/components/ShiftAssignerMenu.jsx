@@ -69,8 +69,6 @@ function ShiftAssignerMenu(props) {
     }, [didRequestURL, props.shiftId]);
 
     const assignTeacher = async (e) => {
-        console.log(e);
-
         const externalUserID = e.currentTarget.id.split("_")[1];
 
         fetch(`${process.env.PUBLIC_URL}/adminPanel/addShift`, {
@@ -91,12 +89,44 @@ function ShiftAssignerMenu(props) {
                 setAssignedUsers([
                     ...assignedUsers,
                     availableUsers.find(
-                        (a) => a.externalIDText == externalUserID
+                        (a) => a.externalIDText === externalUserID
                     ),
                 ]);
                 setAvailableUsers(
                     availableUsers.filter(
-                        (a) => a.externalIDText != externalUserID
+                        (a) => a.externalIDText !== externalUserID
+                    )
+                );
+            });
+    };
+
+    const unAssignTeacher = async (e) => {
+        const externalUserID = e.currentTarget.id.split("_")[1];
+
+        fetch(`${process.env.PUBLIC_URL}/adminPanel/removeShift`, {
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+            method: "POST",
+            body: JSON.stringify({
+                shiftExternalIDText: props.shiftId,
+                userExternalIDText: externalUserID,
+            }),
+        })
+            .then((response) => response.json())
+            .then((json) => {
+                console.log(json);
+
+                setAssignedUsers([
+                    assignedUsers.filter(
+                        (a) => a.externalIDText !== externalUserID
+                    ),
+                ]);
+                setAvailableUsers(
+                    ...availableUsers,
+                    assignTeacher.find(
+                        (a) => a.externalIDText === externalUserID
                     )
                 );
             });
@@ -118,15 +148,16 @@ function ShiftAssignerMenu(props) {
                     <hr />
                     {assignedUsers.map((teacher, i) => {
                         return (
-                            <Container
+                            <Button
                                 key={i}
-                                className="teacher"
+                                className="teacher teacherAssigned"
                                 id={`teacher_${teacher.externalIDText}`}
+                                onClick={(e) => {
+                                    unAssignTeacher(e);
+                                }}
                             >
-                                <h3>
-                                    {teacher.firstName} {teacher.lastName}
-                                </h3>
-                            </Container>
+                                {teacher.firstName} {teacher.lastName}
+                            </Button>
                         );
                     })}
                 </Container>

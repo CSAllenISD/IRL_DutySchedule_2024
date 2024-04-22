@@ -4,6 +4,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-date-range/dist/styles.css'; // main style file
+import 'react-date-range/dist/theme/default.css'; // theme css file
 
 import ErrorPage from "./pages/ErrorPage";
 import SignIn from './pages/SignIn';
@@ -17,6 +19,7 @@ import Calendar from './pages/authRequired/CalendarPage';
 import Admin from './pages/adminRequired/Admin';
 import Upload from './pages/adminRequired/Upload';
 import AdminCalendar from './pages/adminRequired/AdminCalendar';
+import DutySettings from './pages/adminRequired/DutySettings';
 
 const router = createBrowserRouter([
   {
@@ -70,6 +73,10 @@ const router = createBrowserRouter([
   {
     path: "/adminPanel/calendar",
     element: <AdminCalendar />,
+  },
+  {
+    path: "/adminPanel/dutySettings",
+    element: <DutySettings />,
   }
 ],
 {
