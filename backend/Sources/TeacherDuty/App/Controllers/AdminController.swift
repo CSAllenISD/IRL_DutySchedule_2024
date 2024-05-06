@@ -252,6 +252,86 @@ struct AdminController: RouteCollection {
 
             return Array(dutiesDataRes) // Sets do not conform to response struct.
         }
+
+        adminProtected.post("adminPanel", "duties", "available", ":userID") { req async throws -> [AdminShiftAvailabilityStatusDataRes] in
+            let dutiesDataReq = try req.content.decode(AdminShiftAvailabilityStatusDataReq.self)
+            var dutiesDataRes = [AdminShiftAvailabilityStatusDataRes]()
+            
+            guard let userID = req.parameters.get("userID", as: Int.self) else {
+                app.logger.warning("userID does not have a field.")
+                throw Abort(.unauthorized, reason: "userID does not have a field")
+            }
+            guard let user = try await User.query(on: req.db).filter(\.$id == userID).first() else {
+                app.logger.warning("User does not exist")
+                throw Abort(.unauthorized, reason: "User does not exist")
+            }
+
+            let userAvailabilities = try await UserAvailability.query(on: req.db)
+              .join(User.self, on: \UserAvailability.$user.$id == \User.$id)
+              .join(Availability.self, on: \UserAvailability.$availability.$id == \Availability.$id)
+              .filter(User.self, \.$id == userID)
+              .all()
+
+            let shifts = try await Shift.query(on: req.db)
+              .join(Day.self, on: \Shift.$day.$id == \Day.$id)
+              .join(Position.self, on: \Shift.$position.$id == \Position.$id)
+              .filter(Day.self, \.$day >= dutiesDataReq.from)
+              .filter(Day.self, \.$day <= dutiesDataReq.through)
+              .all()
+            
+            print(shifts.count)
+            for shift in shifts {
+                
+                guard let shiftInternalID = shift.id else {
+                    app.logger.warning("Shift does not have id field.")
+                    throw Abort(.unauthorized, reason: "Shift does not have id field")
+                }
+                
+                guard let shiftDutyLoc = try await Position.query(on: req.db)
+                        .join(Duty.self, on: \Position.$duty.$id == \Duty.$id)
+                        .join(Location.self, on: \Position.$location.$id == \Location.$id)
+                        .filter(Position.self, \.$id == shift.$position.id)
+                        .first() else {
+                    app.logger.warning("ShiftDutyLoc error.")
+                    throw Abort(.unauthorized, reason: "ShiftDutyLoc error")
+                    
+                }
+                
+                let position = try shift.joined(Position.self)
+                let dayModel = try shift.joined(Day.self)
+                let location = try shiftDutyLoc.joined(Location.self)
+                let duty = try shiftDutyLoc.joined(Duty.self)
+                
+                let shiftID =  shift.externalIDText
+                let startTime = shift.start
+                let endTime = shift.end
+                let day = dayModel.day
+                let dayOfWeek = dayModel.dayOfWeek
+                let dayType = dayModel.supplementaryJSON
+                let dutyName = duty.name
+                let dutyDescription = duty.description
+                let locationName = location.name
+                let locationDescription = location.description
+               
+                let dutiesData = AdminShiftAvailabilityStatusDataRes.init(
+                  shiftExternalIDText: shiftID!,
+                  startTime: startTime,
+                  endTime: endTime,
+                  day: day,
+                  dayOfWeek: dayOfWeek,
+                  dayType: dayType,
+                  dutyName: dutyName,
+                  dutyDescription: dutyDescription,
+                  locationName: locationName,
+                  locationDescription: locationDescription,
+                  fullfilledStatus: "?"
+                )
+                
+                dutiesDataRes.append(dutiesData)
+            }
+            return dutiesDataRes
+            
+        }
         
         //Endpoint that returns all the users that are assigned a specific shift
 

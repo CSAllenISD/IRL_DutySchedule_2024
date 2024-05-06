@@ -24,7 +24,7 @@ function ShiftEditorMenu(props) {
     });
 
     const getData = (info) => {
-        const requestURL = `${process.env.PUBLIC_URL}/adminPanel/duties/available/${props.userId}-${info.start.toISOString()}-${info.end.toISOString()}`;
+        const requestURL = `${process.env.PUBLIC_URL}/adminPanel/user/availablility/${props.userId}-${info.start.toISOString()}-${info.end.toISOString()}`;
         if (didRequestURL === requestURL) return;
         setDidRequestURL(requestURL);
 
